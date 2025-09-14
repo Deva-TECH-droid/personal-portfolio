@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookmark Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f9;
+    }
+    h2 {
+      color: #333;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    button {
+      cursor: pointer;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: white;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    a {
+      text-decoration: none;
+      color: #007BFF;
+      font-weight: bold;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .delete-btn {
+      background: red;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background: darkred;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔖 My Bookmark Manager</h2>
+
+  <input type="text" id="siteName" placeholder="Website Name">
+  <input type="url" id="siteUrl" placeholder="https://example.com">
+  <button onclick="addBookmark()">Add Bookmark</button>
+
+  <h3>Saved Bookmarks</h3>
+  <ul id="bookmarkList"></ul>
+
+  <script>
+    // Load bookmarks from localStorage when page loads
+    document.addEventListener("DOMContentLoaded", loadBookmarks);
+
+    function addBookmark() {
+      let name = document.getElementById("siteName").value;
+      let url = document.getElementById("siteUrl").value;
+
+      if (!name || !url) {
+        alert("⚠️ Please enter both name and URL");
+        return;
+      }
+
+      let bookmark = { name, url };
+
+      // Get existing bookmarks
+      let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+
+      // Add new bookmark
+      bookmarks.push(bookmark);
+
+      // Save to localStorage
+      localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+
+      // Clear input
+      document.getElementById("siteName").value = "";
+      document.getElementById("siteUrl").value = "";
+
+      // Reload bookmarks
+      loadBookmarks();
+    }
+
+    function loadBookmarks() {
+      let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+      let list = document.getElementById("bookmarkList");
+      list.innerHTML = "";
+
+      bookmarks.forEach((bookmark, index) => {
+        let li = document.createElement("li");
+
+        let link = document.createElement("a");
+        link.href = bookmark.url;
+        link.target = "_blank";
+        link.textContent = bookmark.name;
+
+        let delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.className = "delete-btn";
+        delBtn.onclick = () => deleteBookmark(index);
+
+        li.appendChild(link);
+        li.appendChild(delBtn);
+        list.appendChild(li);
+      });
+    }
+
+    function deleteBookmark(index) {
+      let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+      bookmarks.splice(index, 1);
+      localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+      loadBookmarks();
+    }
+  </script>
+</body>
+</html>
